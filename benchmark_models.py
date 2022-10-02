@@ -35,17 +35,28 @@ precisions = ["float", "half", "double"]
 device_name = str(torch.cuda.get_device_name(0))
 # Training settings
 parser = argparse.ArgumentParser(description="PyTorch Benchmarking")
-parser.add_argument("--WARM_UP", "-w", type=int, default=5, required=False, help="Num of warm up")
-parser.add_argument("--NUM_TEST", "-n", type=int, default=50, required=False, help="Num of Test")
+parser.add_argument(
+    "--WARM_UP", "-w", type=int, default=5, required=False, help="Num of warm up"
+)
+parser.add_argument(
+    "--NUM_TEST", "-n", type=int, default=50, required=False, help="Num of Test"
+)
 parser.add_argument(
     "--BATCH_SIZE", "-b", type=int, default=12, required=False, help="Num of batch size"
 )
 parser.add_argument(
     "--NUM_CLASSES", "-c", type=int, default=1000, required=False, help="Num of class"
 )
-parser.add_argument("--NUM_GPU", "-g", type=int, default=1, required=False, help="Num of gpus")
 parser.add_argument(
-    "--folder", "-f", type=str, default="result", required=False, help="folder to save results"
+    "--NUM_GPU", "-g", type=int, default=1, required=False, help="Num of gpus"
+)
+parser.add_argument(
+    "--folder",
+    "-f",
+    type=str,
+    default="result",
+    required=False,
+    help="folder to save results",
 )
 args = parser.parse_args()
 args.BATCH_SIZE *= args.NUM_GPU
@@ -97,7 +108,9 @@ def train(precision="single"):
                 end = time.time()
                 if step >= args.WARM_UP:
                     durations.append((end - start) * 1000)
-            print(f"{model_name} model average train time : {sum(durations)/len(durations)}ms")
+            print(
+                f"{model_name} model average train time : {sum(durations)/len(durations)}ms"
+            )
             del model
             benchmark[model_name] = durations
     return benchmark
@@ -115,7 +128,9 @@ def inference(precision="float"):
                 model = model.to("cuda")
                 model.eval()
                 durations = []
-                print(f"Benchmarking Inference {precision} precision type {model_name} ")
+                print(
+                    f"Benchmarking Inference {precision} precision type {model_name} "
+                )
                 for step, img in enumerate(rand_loader):
                     img = getattr(img, precision)()
                     torch.cuda.synchronize()
