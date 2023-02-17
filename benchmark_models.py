@@ -29,6 +29,17 @@ MODEL_LIST = {
     models.shufflenetv2: models.shufflenetv2.__all__[1:],
 }
 
+# follow the change of https://github.com/ryujaehun/pytorch-gpu-benchmark/issues/21
+model_names = sorted(
+    name
+    for name in models.__dict__
+    if name.islower() and not name.startswith("__") and callable(models.__dict__[name])
+)
+
+MODEL_LIST = {
+    models.resnet: [name for name in model_names if "resnet" in name],
+}
+
 precisions = ["float", "half", "double"]
 # For post-voltaic architectures, there is a possibility to use tensor-core at half precision.
 # Due to the gradient overflow problem, apex is recommended for practical use.
